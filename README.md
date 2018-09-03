@@ -2,8 +2,8 @@
 
 [machina.Fsm][1] dressed as a fourth [Backbone][2] pillar next to Model, View and Router.
 
-[1]: http://backbonejs.org
-[2]: http://machina-js.org
+[1]: http://machina-js.org
+[2]: http://backbonejs.org
 
 
 ## Quickstart
