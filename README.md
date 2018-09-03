@@ -5,6 +5,8 @@
 [1]: http://machina-js.org
 [2]: http://backbonejs.org
 
+[![Build Status](https://travis-ci.org/jgonggrijp/backbone-machina.svg?branch=develop)](https://travis-ci.org/jgonggrijp/backbone-machina)
+
 
 ## Quickstart
 
