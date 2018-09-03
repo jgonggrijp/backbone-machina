@@ -1,15 +1,30 @@
 {
   "name": "backbone-machina",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "machina.Fsm dressed as a fourth Backbone pillar next to Model, View and Router",
-  "keywords": ["backbone", "machina", "machinajs", "fsm", "finite", "state", "machine", "automaton", "automata"],
+  "keywords": [
+    "backbone",
+    "machina",
+    "machinajs",
+    "fsm",
+    "finite",
+    "state",
+    "machine",
+    "automaton",
+    "automata"
+  ],
   "bugs": "https://github.com/jgonggrijp/backbone-machina/issues",
   "repository": "github:jgonggrijp/backbone-machina",
   "author": "Julian Gonggrijp <dev@juliangonggrijp.com>",
   "license": "BSD-3-Clause",
   "private": false,
   "main": "backbone-machina.js",
-  "files": ["backbone-machina.js*", "README.md", "LICENSE", "package.json"],
+  "files": [
+    "backbone-machina.js*",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
   "scripts": {
     "build": "coffee -ctm *.coffee",
     "test": "jasmine test.js",
