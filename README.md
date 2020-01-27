@@ -5,7 +5,16 @@
 [1]: http://machina-js.org
 [2]: http://backbonejs.org
 
-[![pipeline status](https://gitlab.com/jgonggrijp/backbone-machina/badges/develop/pipeline.svg)](https://gitlab.com/jgonggrijp/backbone-machina/commits/develop)
+[![pipeline status][shield-pipeline]][build] [![latest version on npm][shield-npm]][npm] [![code hosted on GitLab][shield-gitlab]][code] [![issue tracker on GitLab][shield-issues]][tracker] [![author: Julian Gonggrijp][shield-jgonggrijp]][jgonggrijp] [![license text][shield-license]][license] [![made with CoffeeScript][shield-coffee]][coffeescript] [![changelog][shield-changelog]][changelog]
+
+[code]: https://gitlab.com/jgonggrijp/backbone-machina
+[tracker]: https://gitlab.com/jgonggrijp/backbone-machina/issues
+[license]: https://gitlab.com/jgonggrijp/backbone-machina/blob/master/LICENSE
+[changelog]: https://gitlab.com/jgonggrijp/backbone-machina/blob/master/CHANGELOG.md
+[build]: https://gitlab.com/jgonggrijp/backbone-machina/commits/develop
+[npm]: https://www.npmjs.com/package/backbone-machina
+[jgonggrijp]: https://juliangonggrijp.com
+[coffeescript]: https://coffeescript.org/
 
 
 ## Quickstart
@@ -50,3 +59,12 @@ Finite state machines are ideal for managing contextual state. There are many li
 Head over to the [wiki][5] for some philosophy on Backbone project organization, which also discusses the place of `BackboneFsm` in your project.
 
 [5]: https://gitlab.com/jgonggrijp/backbone-machina/-/wikis/Backbone-project-organization-philosophy
+
+[shield-pipeline]: https://gitlab.com/jgonggrijp/backbone-machina/badges/develop/pipeline.svg
+[shield-npm]: https://img.shields.io/npm/v/backbone-machina
+[shield-gitlab]: https://img.shields.io/badge/-GitLab-555?logo=gitlab
+[shield-issues]: https://img.shields.io/badge/-issues-555?logo=gitlab
+[shield-changelog]: https://img.shields.io/badge/-changelog-555?logo=gitlab
+[shield-jgonggrijp]: https://img.shields.io/badge/author-Julian_Gonggrijp-708
+[shield-license]: https://img.shields.io/npm/l/backbone-machina
+[shield-coffee]: https://img.shields.io/badge/-CoffeeScript-2F2625?logo=CoffeeScript
