@@ -5,7 +5,7 @@
 [1]: http://machina-js.org
 [2]: http://backbonejs.org
 
-[![Build Status](https://travis-ci.org/jgonggrijp/backbone-machina.svg?branch=develop)](https://travis-ci.org/jgonggrijp/backbone-machina)
+[![pipeline status](https://gitlab.com/jgonggrijp/backbone-machina/badges/develop/pipeline.svg)](https://gitlab.com/jgonggrijp/backbone-machina/commits/develop)
 
 
 ## Quickstart
@@ -49,16 +49,4 @@ Finite state machines are ideal for managing contextual state. There are many li
 
 Head over to the [wiki][5] for some philosophy on Backbone project organization, which also discusses the place of `BackboneFsm` in your project.
 
-[5]: https://github.com/jgonggrijp/backbone-machina/wiki/Backbone-project-organization-philosophy
-
-
-## Limitations
-
-*Please consult the [issue list][6] for the most up-to-date information on bugs and missing features.*
-
- - `machina.Fsm`'s `eventListeners` option is currently not supported. [#1][7]
- - There is no `machina.BehavioralFsm` variant. [#2][8]
-
-[6]: https://github.com/jgonggrijp/backbone-machina/issues
-[7]: https://github.com/jgonggrijp/backbone-machina/issues/1
-[8]: https://github.com/jgonggrijp/backbone-machina/issues/2
+[5]: https://gitlab.com/jgonggrijp/backbone-machina/-/wikis/Backbone-project-organization-philosophy

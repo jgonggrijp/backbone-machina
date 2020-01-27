@@ -13,8 +13,8 @@
     "automaton",
     "automata"
   ],
-  "bugs": "https://github.com/jgonggrijp/backbone-machina/issues",
-  "repository": "github:jgonggrijp/backbone-machina",
+  "bugs": "https://gitlab.com/jgonggrijp/backbone-machina/issues",
+  "repository": "gitlab:jgonggrijp/backbone-machina",
   "author": "Julian Gonggrijp <dev@juliangonggrijp.com>",
   "license": "BSD-3-Clause",
   "private": false,
