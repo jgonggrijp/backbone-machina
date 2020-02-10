@@ -322,3 +322,45 @@ describe 'BackboneFsm', ->
             expect(@spies['enter:bed']).toHaveBeenCalled()
             expect(@spies['exit:bed']).not.toHaveBeenCalled()
             expect(@spies['enter:uninitialized']).not.toHaveBeenCalled()
+
+    describe 'supports hierarchical scenarios, i.e.', ->
+        beforeEach ->
+            jasmine.clock().install()
+            @spy = jasmine.createSpy 'eventSpy'
+            @fsm = new CrossWalk
+                eventListeners:
+                    all: @spy
+
+        afterEach ->
+            jasmine.clock().uninstall()
+
+        it 'attempts to let child FSMs handle input first', ->
+            @fsm.handle 'pedestrianWaiting'
+            jasmine.clock().tick 30001
+            expect(@fsm.compositeState()).toBe 'vehiclesEnabled.yellow'
+
+        it 'bubbles up events from child FSMs', ->
+            jasmine.clock().tick 30001
+            vehicleSignal = @fsm.states.vehiclesEnabled._child.instance
+            expect(@spy).toHaveBeenCalledWith 'enter:green-interruptible', vehicleSignal
+            # In this case we don't expect the action, because Machina
+            # forwards only the first two event payload arguments.
+            # You can use childFsm.currentAction instead.
+
+        it 'bubbles up unhandled inputs to parent FSMs', ->
+            @fsm.handle 'pedestrianWaiting'
+            jasmine.clock().tick 36001
+            expect(@fsm.compositeState()).toBe 'pedestriansEnabled.walking'
+
+        it 'ignores inactive child FSMs', ->
+            @fsm.handle 'pedestrianWaiting'
+            jasmine.clock().tick 36001
+            @spy.calls.reset()
+            vehicleSignal = @fsm.states.vehiclesEnabled._child.instance
+            vehicleSignal.trigger 'test'
+            expect(@spy).not.toHaveBeenCalled()
+
+        it 'passes a _reset input to child FSMs on transition', ->
+            @fsm.handle 'pedestrianWaiting'
+            jasmine.clock().tick 72001
+            expect(@fsm.compositeState()).toBe 'vehiclesEnabled.green'
