@@ -1,3 +1,6 @@
+**IMPORTANT NOTICE FOR GITHUB VISITORS:** Development of backbone-machina has moved to [GitLab][code]. The repository on GitHub will not be updated anymore and any issues should be reported in the [GitLab issue tracker][tracker]!
+
+
 # backbone-machina
 
 [machina.Fsm][1] dressed as a fourth [Backbone][2] pillar next to Model, View and Router.
