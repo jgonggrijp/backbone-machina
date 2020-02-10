@@ -2,6 +2,7 @@ import * as bb from 'backbone'
 import _ from 'lodash'
 import BackboneFsm from './backbone-machina'
 
+# Fixture for the non-hierarchical tests
 TestFsm = BackboneFsm.extend
     initialize: -> @food = 'banana'
     states:
@@ -21,13 +22,86 @@ TestFsm = BackboneFsm.extend
             cycle: 'bicycle'
             '*': -> @deferAndTransition 'bicycle'
 
+# Fixture for the hierarchical tests
+# (this is the example from the machina.js website)
+VehicleSignal = BackboneFsm.extend
+    namespace: 'vehicle-signal'
+    initialState: 'uninitialized'
+    states:
+        uninitialized:
+            '*': ->
+                @deferUntilTransition()
+                @transition 'green'
+        green:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 30000)
+                @emit 'vehicles', status: 'GREEN'
+            timeout: 'green-interruptible'
+            pedestrianWaiting: -> @deferUntilTransition 'green-interruptible'
+            _onExit: -> clearTimeout @timer
+        'green-interruptible':
+            pedestrianWaiting: 'yellow'
+        yellow:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 5000)
+                @emit 'vehicles', status: 'YELLOW'
+            timeout: 'red'
+            _onExit: -> clearTimeout @timer
+        red:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 1000)
+                @emit 'vehicles', status: 'RED'
+            _reset: 'green'
+            _onExit: -> clearTimeout @timer
+    reset: -> @handle '_reset'
+    pedestrianWaiting: -> @handle 'pedestrianWaiting'
+
+PedestrianSignal = BackboneFsm.extend
+    namespace: 'pedestrian-signal'
+    initialState: 'uninitialized'
+    reset: -> @transition 'walking'
+    states:
+        uninitialized:
+            '*': ->
+                @deferUntilTransition()
+                @transition 'walking'
+        walking:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 30000)
+                @emit 'pedestrians', status: 'WALK'
+            timeout: 'flashing'
+            _onExit: -> clearTimeout @timer
+        flashing:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 5000)
+                @emit 'pedestrians', status: 'DO_NOT_WALK', flashing: true
+            timeout: 'dontwalk'
+            _onExit: -> clearTimeout @timer
+        dontwalk:
+            _onEnter: -> @timer = setTimeout((=> @handle 'timeout'), 1000)
+            _reset: 'walking'
+            _onExit: -> clearTimeout @timer
+
+CrossWalk = BackboneFsm.extend
+    namespace: 'crosswalk'
+    initialState: 'vehiclesEnabled'
+    states:
+        vehiclesEnabled:
+            _child: -> new VehicleSignal
+            _onEnter: -> @emit 'pedestrians', status: 'DO_NOT_WALK'
+            timeout: 'pedestriansEnabled'
+        pedestriansEnabled:
+            _child: -> new PedestrianSignal
+            _onEnter: -> @emit 'vehicles', status: 'RED'
+            timeout: 'vehiclesEnabled'
+
 describe 'BackboneFsm', ->
     beforeEach ->
         @fsm = new TestFsm()
 
     describe 'has the Backbone.Events interface, which', ->
         beforeEach ->
-            @messager = _.clone bb.Events
+            @messenger = _.clone bb.Events
             @spy1 = jasmine.createSpy 'spy1'
             @spy2 = jasmine.createSpy 'spy2'
 
@@ -69,31 +143,36 @@ describe 'BackboneFsm', ->
             expect(@spy2.calls.count()).toEqual 2
 
         it 'can listen to another object', ->
-            @fsm.listenTo @messager, 'test', @spy1
-            @messager.trigger 'test', 'bla'
+            @fsm.listenTo @messenger, 'test', @spy1
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
-            @messager.trigger 'test', 'bla'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 2
             call = @spy1.calls.mostRecent()
             expect(call.object).toBe @fsm
             expect(call.args).toEqual ['bla']
 
         it 'can listen to another object once', ->
-            @fsm.listenToOnce @messager, 'test', @spy1
+            @fsm.listenToOnce @messenger, 'test', @spy1
             expect(@spy1.calls.count()).toEqual 0
-            @messager.trigger 'test', 'bla'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
-            @messager.trigger 'test', 'bla'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
 
         it 'can stop listening to another object', ->
-            @fsm.listenTo @messager, 'test', @spy1
+            @fsm.listenTo @messenger, 'test', @spy1
             expect(@spy1.calls.count()).toEqual 0
-            @messager.trigger 'test', 'bla'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
-            @fsm.stopListening @messager, 'test'
-            @messager.trigger 'test', 'bla'
+            @fsm.stopListening @messenger, 'test'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
+
+        it 'supports "all"', ->
+            @fsm.on 'all', @spy1
+            @fsm.trigger 'test', 'bla'
+            expect(@spy1).toHaveBeenCalledWith 'test', 'bla'
 
     describe 'has the machina.Fsm interface, which', ->
         beforeEach ->
@@ -104,6 +183,9 @@ describe 'BackboneFsm', ->
                 nohandler: jasmine.createSpy 'nohandler'
                 invalidstate: jasmine.createSpy 'invalidstate'
                 deferred: jasmine.createSpy 'deferred'
+            @prebound = jasmine.createSpy 'prebound'
+            @fsm = new TestFsm eventListeners:
+                prebound: @prebound
             @fsm.on @spies
 
         it 'calls the initialize method', ->
@@ -203,6 +285,15 @@ describe 'BackboneFsm', ->
             @fsm.handle 'eat'
             expect(onStopCycling).toHaveBeenCalled()
 
+        it 'accepts the eventListeners constructor option', ->
+            @fsm.emit 'prebound'
+            expect(@prebound).toHaveBeenCalled()
+
+        it 'supports "*"', ->
+            spy = jasmine.createSpy 'star'
+            @fsm.on '*', spy
+            @fsm.trigger 'banana'
+            expect(spy).toHaveBeenCalledWith 'banana'
 
     describe 'has an additional events interface, which', ->
         beforeEach ->
@@ -231,3 +322,45 @@ describe 'BackboneFsm', ->
             expect(@spies['enter:bed']).toHaveBeenCalled()
             expect(@spies['exit:bed']).not.toHaveBeenCalled()
             expect(@spies['enter:uninitialized']).not.toHaveBeenCalled()
+
+    describe 'supports hierarchical scenarios, i.e.', ->
+        beforeEach ->
+            jasmine.clock().install()
+            @spy = jasmine.createSpy 'eventSpy'
+            @fsm = new CrossWalk
+                eventListeners:
+                    all: @spy
+
+        afterEach ->
+            jasmine.clock().uninstall()
+
+        it 'attempts to let child FSMs handle input first', ->
+            @fsm.handle 'pedestrianWaiting'
+            jasmine.clock().tick 30001
+            expect(@fsm.compositeState()).toBe 'vehiclesEnabled.yellow'
+
+        it 'bubbles up events from child FSMs', ->
+            jasmine.clock().tick 30001
+            vehicleSignal = @fsm.states.vehiclesEnabled._child.instance
+            expect(@spy).toHaveBeenCalledWith 'enter:green-interruptible', vehicleSignal
+            # In this case we don't expect the action, because Machina
+            # forwards only the first two event payload arguments.
+            # You can use childFsm.currentAction instead.
+
+        it 'bubbles up unhandled inputs to parent FSMs', ->
+            @fsm.handle 'pedestrianWaiting'
+            jasmine.clock().tick 36001
+            expect(@fsm.compositeState()).toBe 'pedestriansEnabled.walking'
+
+        it 'ignores inactive child FSMs', ->
+            @fsm.handle 'pedestrianWaiting'
+            jasmine.clock().tick 36001
+            @spy.calls.reset()
+            vehicleSignal = @fsm.states.vehiclesEnabled._child.instance
+            vehicleSignal.trigger 'test'
+            expect(@spy).not.toHaveBeenCalled()
+
+        it 'passes a _reset input to child FSMs on transition', ->
+            @fsm.handle 'pedestrianWaiting'
+            jasmine.clock().tick 72001
+            expect(@fsm.compositeState()).toBe 'vehiclesEnabled.green'
