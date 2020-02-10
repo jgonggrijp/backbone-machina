@@ -5,10 +5,14 @@ import { Fsm } from 'machina'
 export default BackboneFsm = Fsm.extend
     constructor: ->
         Fsm.apply @, arguments
-        @on 'transition', ({fromState, toState, action}) =>
-            @emit "exit:#{fromState}", @, action
-            @emit "enter:#{toState}", @, action
+        @on @eventListeners
+        @eventListeners = @_events
         @
 
-extend BackboneFsm.prototype, Events
-BackboneFsm.prototype.emit = BackboneFsm.prototype.trigger
+    eventListeners:
+        transition: ({fromState, toState, action}) ->
+            @emit "exit:#{fromState}", @, action
+            @emit "enter:#{toState}", @, action
+
+extend BackboneFsm.prototype, Events,
+    emit: Events.trigger

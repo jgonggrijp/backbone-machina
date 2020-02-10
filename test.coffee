@@ -178,6 +178,9 @@ describe 'BackboneFsm', ->
                 nohandler: jasmine.createSpy 'nohandler'
                 invalidstate: jasmine.createSpy 'invalidstate'
                 deferred: jasmine.createSpy 'deferred'
+            @prebound = jasmine.createSpy 'prebound'
+            @fsm = new TestFsm eventListeners:
+                prebound: @prebound
             @fsm.on @spies
 
         it 'calls the initialize method', ->
@@ -277,6 +280,9 @@ describe 'BackboneFsm', ->
             @fsm.handle 'eat'
             expect(onStopCycling).toHaveBeenCalled()
 
+        it 'accepts the eventListeners constructor option', ->
+            @fsm.emit 'prebound'
+            expect(@prebound).toHaveBeenCalled()
 
     describe 'has an additional events interface, which', ->
         beforeEach ->
