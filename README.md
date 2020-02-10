@@ -11,7 +11,7 @@
 [tracker]: https://gitlab.com/jgonggrijp/backbone-machina/issues
 [license]: https://gitlab.com/jgonggrijp/backbone-machina/blob/master/LICENSE
 [changelog]: https://gitlab.com/jgonggrijp/backbone-machina/blob/master/CHANGELOG.md
-[build]: https://gitlab.com/jgonggrijp/backbone-machina/commits/develop
+[build]: https://gitlab.com/jgonggrijp/backbone-machina/commits/master
 [npm]: https://www.npmjs.com/package/backbone-machina
 [jgonggrijp]: https://juliangonggrijp.com
 [coffeescript]: https://coffeescript.org/
@@ -60,7 +60,7 @@ Head over to the [wiki][5] for some philosophy on Backbone project organization,
 
 [5]: https://gitlab.com/jgonggrijp/backbone-machina/-/wikis/Backbone-project-organization-philosophy
 
-[shield-pipeline]: https://gitlab.com/jgonggrijp/backbone-machina/badges/develop/pipeline.svg
+[shield-pipeline]: https://gitlab.com/jgonggrijp/backbone-machina/badges/master/pipeline.svg
 [shield-npm]: https://img.shields.io/npm/v/backbone-machina
 [shield-gitlab]: https://img.shields.io/badge/-GitLab-555?logo=gitlab
 [shield-issues]: https://img.shields.io/badge/-issues-555?logo=gitlab
