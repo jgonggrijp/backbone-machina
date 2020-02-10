@@ -2,6 +2,7 @@ import * as bb from 'backbone'
 import _ from 'lodash'
 import BackboneFsm from './backbone-machina'
 
+# Fixture for the non-hierarchical tests
 TestFsm = BackboneFsm.extend
     initialize: -> @food = 'banana'
     states:
@@ -20,6 +21,79 @@ TestFsm = BackboneFsm.extend
         bed:
             cycle: 'bicycle'
             '*': -> @deferAndTransition 'bicycle'
+
+# Fixture for the hierarchical tests
+# (this is the example from the machina.js website)
+VehicleSignal = BackboneFsm.extend
+    namespace: 'vehicle-signal'
+    initialState: 'uninitialized'
+    states:
+        uninitialized:
+            '*': ->
+                @deferUntilTransition()
+                @transition 'green'
+        green:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 30000)
+                @emit 'vehicles', status: 'GREEN'
+            timeout: 'green-interruptible'
+            pedestrianWaiting: -> @deferUntilTransition 'green-interruptible'
+            _onExit: -> clearTimeout @timer
+        'green-interruptible':
+            pedestrianWaiting: 'yellow'
+        yellow:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 5000)
+                @emit 'vehicles', status: 'YELLOW'
+            timeout: 'red'
+            _onExit: -> clearTimeout @timer
+        red:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 1000)
+                @emit 'vehicles', status: 'RED'
+            _reset: 'green'
+            _onExit: -> clearTimeout @timer
+    reset: -> @handle '_reset'
+    pedestrianWaiting: -> @handle 'pedestrianWaiting'
+
+PedestrianSignal = BackboneFsm.extend
+    namespace: 'pedestrian-signal'
+    initialState: 'uninitialized'
+    reset: -> @transition 'walking'
+    states:
+        uninitialized:
+            '*': ->
+                @deferUntilTransition()
+                @transition 'walking'
+        walking:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 30000)
+                @emit 'pedestrians', status: 'WALK'
+            timeout: 'flashing'
+            _onExit: -> clearTimeout @timer
+        flashing:
+            _onEnter: ->
+                @timer = setTimeout((=> @handle 'timeout'), 5000)
+                @emit 'pedestrians', status: 'DO_NOT_WALK', flashing: true
+            timeout: 'dontwalk'
+            _onExit: -> clearTimeout @timer
+        dontwalk:
+            _onEnter: -> @timer = setTimeout((=> @handle 'timeout'), 1000)
+            _reset: 'walking'
+            _onExit: -> clearTimeout @timer
+
+CrossWalk = BackboneFsm.extend
+    namespace: 'crosswalk'
+    initialState: 'vehiclesEnabled'
+    states:
+        vehiclesEnabled:
+            _child: -> new VehicleSignal
+            _onEnter: -> @emit 'pedestrians', status: 'DO_NOT_WALK'
+            timeout: 'pedestriansEnabled'
+        pedestriansEnabled:
+            _child: -> new PedestrianSignal
+            _onEnter: -> @emit 'vehicles', status: 'RED'
+            timeout: 'vehiclesEnabled'
 
 describe 'BackboneFsm', ->
     beforeEach ->
