@@ -33,6 +33,8 @@ someFsm.on('exit:anotherState', (fsm, action) => {...});
 
 `BackboneFsm` is the default and only export of this package. It extends both [`machina.Fsm`][3] and [`Backbone.Events`][4]. In addition, it emits `enter:stateName` and `exit:stateName` events so you can hook into the behaviour of your FSM in the same way as you would do with `Backbone.Model` et al. This fully describes the API.
 
+*New in version 1.1.0:* `BackboneFsm` is truly 100% compatible with both interfaces it extends. You can use `'*'` and `'all'` interchangeably as wildcards when subscribing to events. `machina.Fsm`’s `eventListeners` option is supported as well. As a result, `BackboneFsm` can now be used in hierarchical settings as a drop-in replacement for `machina.Fsm`.
+
 [3]: https://github.com/ifandelse/machina.js/wiki/API
 [4]: https://backbonejs.org/#Events
 
