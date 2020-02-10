@@ -101,7 +101,7 @@ describe 'BackboneFsm', ->
 
     describe 'has the Backbone.Events interface, which', ->
         beforeEach ->
-            @messager = _.clone bb.Events
+            @messenger = _.clone bb.Events
             @spy1 = jasmine.createSpy 'spy1'
             @spy2 = jasmine.createSpy 'spy2'
 
@@ -143,30 +143,30 @@ describe 'BackboneFsm', ->
             expect(@spy2.calls.count()).toEqual 2
 
         it 'can listen to another object', ->
-            @fsm.listenTo @messager, 'test', @spy1
-            @messager.trigger 'test', 'bla'
+            @fsm.listenTo @messenger, 'test', @spy1
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
-            @messager.trigger 'test', 'bla'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 2
             call = @spy1.calls.mostRecent()
             expect(call.object).toBe @fsm
             expect(call.args).toEqual ['bla']
 
         it 'can listen to another object once', ->
-            @fsm.listenToOnce @messager, 'test', @spy1
+            @fsm.listenToOnce @messenger, 'test', @spy1
             expect(@spy1.calls.count()).toEqual 0
-            @messager.trigger 'test', 'bla'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
-            @messager.trigger 'test', 'bla'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
 
         it 'can stop listening to another object', ->
-            @fsm.listenTo @messager, 'test', @spy1
+            @fsm.listenTo @messenger, 'test', @spy1
             expect(@spy1.calls.count()).toEqual 0
-            @messager.trigger 'test', 'bla'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
-            @fsm.stopListening @messager, 'test'
-            @messager.trigger 'test', 'bla'
+            @fsm.stopListening @messenger, 'test'
+            @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
 
     describe 'has the machina.Fsm interface, which', ->
