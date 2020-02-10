@@ -169,6 +169,11 @@ describe 'BackboneFsm', ->
             @messenger.trigger 'test', 'bla'
             expect(@spy1.calls.count()).toEqual 1
 
+        it 'supports "all"', ->
+            @fsm.on 'all', @spy1
+            @fsm.trigger 'test', 'bla'
+            expect(@spy1).toHaveBeenCalledWith 'test', 'bla'
+
     describe 'has the machina.Fsm interface, which', ->
         beforeEach ->
             @spies =
@@ -283,6 +288,12 @@ describe 'BackboneFsm', ->
         it 'accepts the eventListeners constructor option', ->
             @fsm.emit 'prebound'
             expect(@prebound).toHaveBeenCalled()
+
+        it 'supports "*"', ->
+            spy = jasmine.createSpy 'star'
+            @fsm.on '*', spy
+            @fsm.trigger 'banana'
+            expect(spy).toHaveBeenCalledWith 'banana'
 
     describe 'has an additional events interface, which', ->
         beforeEach ->
